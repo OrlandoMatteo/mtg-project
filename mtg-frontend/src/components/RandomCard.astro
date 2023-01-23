@@ -1,0 +1,17 @@
+---
+const response = await fetch("http://localhost:5000/randomCard");
+const data = await response.json();
+const card = data[0];
+const imgresponse = await fetch("http://localhost:5000/imageSrc/"+card.identifiers.scryfallOracleId);
+const imgdata = await imgresponse.json()
+const src=imgdata.uri
+---
+
+<div class="w-11/12 md:w-1/2 m-auto py-8 border-solid border-slate-900 border-4 rounded-lg">
+	<div class="flex flex-row">
+		<h1 class="text-black text-2xl basis-5/6">{card.name}</h1>
+		<h1 class="text-black text-2xl basis-1/6">{card.manaCost}</h1>
+	</div>
+	<div><img src={src} /></div>
+	<div>{card.text}</div>
+</div>
