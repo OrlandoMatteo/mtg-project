@@ -1,17 +1,67 @@
 ---
+import symbols from "../symbology.json";
 const response = await fetch("http://localhost:5000/randomCard");
 const data = await response.json();
 const card = data[0];
-const imgresponse = await fetch("http://localhost:5000/imageSrc/"+card.identifiers.scryfallOracleId);
-const imgdata = await imgresponse.json()
-const src=imgdata.uri
+const imgresponse = await fetch(
+	"http://localhost:5000/imageSrc/" + card.identifiers.scryfallOracleId
+);
+const imgdata = await imgresponse.json();
+const src = imgdata.uri;
+const manaCost = card.manaCost;
+const extractedArray = manaCost.match(/\{[^}]+\}/g);
+console.log(extractedArray);
+let symbolURLs: Array<string> = [];
+Array.from(extractedArray).forEach((symbol) => {
+	let symbolinfo = symbols.data.find((x) => x.symbol == symbol) || {
+		svg_uri: "",
+	};
+	symbolURLs.push(symbolinfo.svg_uri);
+});
+const cardColors: Array<string> = card.colors;
+const colors: { [key: string]: string } = {
+	U: "#c1d7e9",
+	W: "#f8f6d8",
+	R: "#e49977",
+	B: "#cac5c0",
+	G: "#a3c095",
+};
+let monoColor = "slate";
+let startGradient = "slate";
+let endGradient = "slate";
+let isSingle = true;
+if (cardColors.length == 1) {
+	monoColor = colors[cardColors[0]];
+} else if (cardColors.length == 2) {
+	isSingle = false;
+	startGradient = colors[cardColors[0]];
+	endGradient = colors[cardColors[1]];
+}
 ---
 
-<div class="w-11/12 md:w-1/2 m-auto py-8 border-solid border-slate-900 border-4 rounded-lg">
-	<div class="flex flex-row">
+<div
+	class:list={[
+		"w-11/12 md:w-1/2 m-auto py-8 border-solid border-slate-900 border-4 rounded-lg",
+		{ single: isSingle ,gradient:!isSingle},
+	]}
+>
+	<div class="flex flex-row w-10/12 m-auto border-solid border-slate-900 border-1 rounded-lg my-4 shadow-2xl">
 		<h1 class="text-black text-2xl basis-5/6">{card.name}</h1>
-		<h1 class="text-black text-2xl basis-1/6">{card.manaCost}</h1>
+		{symbolURLs.map((url) => <img class="w-6" src={url} />)}
 	</div>
-	<div><img src={src} /></div>
-	<div>{card.text}</div>
+	<div><img src={src} class="m-auto w-10/12 rounded-lg" /></div>
+	<div class="m-auto w-10/12 rounded-lg" >{card.text}</div>
 </div>
+<style define:vars={{ monoColor, startGradient, endGradient }}>
+	.single {
+		background-color: var(--monoColor);
+	}
+	.gradient {
+		background: var(--startGradient);
+		background: linear-gradient(
+			45deg,
+			var(--startGradient) 0%,
+			var(--endGradient) 100%
+		);
+	}
+</style>
