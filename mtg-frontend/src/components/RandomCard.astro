@@ -31,7 +31,7 @@ let startGradient = "slate";
 let endGradient = "slate";
 let isSingle = true;
 if (cardColors.length == 1) {
-	monoColor = colors[cardColors[0]];
+	monoColor = colors[cardColors[0]] || "slate";
 } else if (cardColors.length == 2) {
 	isSingle = false;
 	startGradient = colors[cardColors[0]];
@@ -39,18 +39,32 @@ if (cardColors.length == 1) {
 }
 ---
 
-<div
-	class:list={[
-		"w-11/12 md:w-1/2 m-auto py-8 border-solid border-slate-900 border-4 rounded-lg",
-		{ single: isSingle ,gradient:!isSingle},
-	]}
->
-	<div class="flex flex-row w-10/12 m-auto border-solid border-slate-900 border-1 rounded-lg my-4 shadow-2xl">
-		<h1 class="text-black text-2xl basis-5/6">{card.name}</h1>
-		{symbolURLs.map((url) => <img class="w-6" src={url} />)}
+<div class="flex h-screen">
+	<div
+		class:list={[
+			"w-11/12 md:w-1/2 m-auto py-1 border-solid border-slate-700 border-4 rounded-lg h-[80vh] flex flex-col",
+			{ single: isSingle, gradient: !isSingle },
+		]}
+	>
+		<div
+			class="flex flex-row w-10/12 m-auto rounded-lg my-4 shadow-inner shadow-2xl p-2 shadowed"
+		>
+			<h1 class="text-black text-xl font-bold basis-5/6">
+				{card.name}
+			</h1>
+			{
+				symbolURLs.map((url) => (
+					<img class="w-6 " src={url} />
+				))
+			}
+		</div>
+		<div><img src={src} class="m-auto w-10/12 rounded-lg" /></div>
+		<div
+			class="m-auto my-2 w-10/12 rounded-lg shadow-inner shadow-2xl p-2 h-fit flex-1 shadowed"
+		>
+			{card.text}
+		</div>
 	</div>
-	<div><img src={src} class="m-auto w-10/12 rounded-lg" /></div>
-	<div class="m-auto w-10/12 rounded-lg" >{card.text}</div>
 </div>
 <style define:vars={{ monoColor, startGradient, endGradient }}>
 	.single {
@@ -63,5 +77,11 @@ if (cardColors.length == 1) {
 			var(--startGradient) 0%,
 			var(--endGradient) 100%
 		);
+	}
+	.shadowed {
+		-webkit-box-shadow: 1px 1px 30px -14px #000000;
+		-moz-box-shadow: 1px 1px 30px -14px #000000;
+		-o-box-shadow: 1px 1px 30px -14px #000000;
+		box-shadow: 1px 1px 30px -14px #000000;
 	}
 </style>
